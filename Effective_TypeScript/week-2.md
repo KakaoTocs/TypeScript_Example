@@ -134,3 +134,38 @@ type Action = SaveAction | LoadAction
 type ActionType = 'save' | 'load';
 type ActionType = Action['type'];
 type ActionRec = Pick<Action, 'type'>; // {type: "save" | "load"}
+
+매핑된 타입과 keyof 조합해서 사용
+
+interface Options {
+	width?: number;
+	height?: number;
+	color?: string;
+	label?: string;
+}
+
+interface OptionsUpdate {
+	width?: number;
+	height?: number;
+	color?: string;
+	label?: string;
+}
+
+class UIWidget {
+	constructor(init: Options) { /* ... */ }
+	update(options: OptionsUpdate) { /* ... */ }
+}
+
+=> (JS의 런타임 연산자가 아닌, 타입스크립트의 typeof를 사용함
+type OptionsUpdate = { [k in keyof Options] ?: Options[k]};
+
+요약
+
+* 타입에 이름 붙이고, extends를 사용해서 인터페이스 필드 반복 줄이기
+* 타입들 간의 매핑 - keyof, typeof, 인덱싱, 매핑된 타입
+* 표준 라이브러리에 있는 제네릭 예시 Pick, Partial, ReturnType
+
+**<다시 보기>**
+
+## 아이템 15: 동적 데이터에 인덱스 시그니처 사용하기
+
