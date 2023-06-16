@@ -169,3 +169,69 @@ type OptionsUpdate = { [k in keyof Options] ?: Options[k]};
 
 ## 아이템 15: 동적 데이터에 인덱스 시그니처 사용하기
 
+"자바스크립트의 장점 중 하나는 바로 객체를 생성하는 문법이 간단하다는 것 입니다" (과연... 장점인가..?)
+
+type Rocket = {[property: string]: string};
+
+interface Rocket {
+	name: string;
+	variant: string;
+	thrust_kN: number;
+}
+
+런타임에 실제 데이터 타입이 다를 수 있다면, undefined 추가 => 항상 undefined 여부 체크 필요
+
+필드가 여러개 있고, 열마다 불특정 필드가 undefined라면, 모든 케이스를 타입으로 정의하기 보단, undefined 타입 1개로 퉁 치는게 최선...
+
+데이터의 타입에 불확실성 있는경우 인덱스 시그니처를 사용하고, 타입이 정확하거나 보다 안전한 방법으로는 인터페이스 ,Record,매핑된 타입을 사용
+
+## 아이템 16: number 인덱스 시그니처보다는 Array, 튜플, ArrayLike를 사용하기
+
+\> "0" == 0
+true
+(세상에나..., === or !== 사용해서 해결)
+
+자바스크립트에서 객체는 키/값 쌍의 모음 
+
+* 키는 보통 문자열이고, 심볼도 가능
+* 값은 뭐든 가능
+
+배열에 숫자 인덱스로 접근하면 런타임에 문자열도 변환되어 사용됨 == 문자열 키로 접근가능
+그래서 타입스크립트는 숫자 키를 허용하고, 문자열 키와 다른 것으로 인식
+
+for of..
+for (const x of XS) {
+	x;
+}
+
+요약
+
+* 인덱스 시그니처에 number를 사용하는것 보단 Array, 튜플, ArrayLike를 사용하는게 좋음
+
+## 아이템 17: 변경된 오류 방지를 위해 readonly 사용하기
+
+readonly 접근제어자를 사용해 함수 내에서 변경을 막음
+
+readonly 함수를 호출하는 함수도 readonly여야함
+외부 라이브러리 함수를 호출하는 경우 타입 단언문을 사용해야함
+
+(배열의 .length에 0을 할다아면 배열이 비워짐)
+
+readonly, let(상수), 원본은 두고 값을 복사해서 수정 => Immutable
+
+깊은 readonly 타입은 제네릭으로 만들어야함.. (라이브러리 ts-essentials -> DeepReadonly)
+
+인덱스 시그니처에도 readonly를 쓸 수 있음
+let obj: { readonly [k: string]: number } = {};
+
+요약
+
+* readonly를 사용해서 인터페이스(매개변수가 수정 가능한지)를 명확하게 함
+
+## 아이템 18: 매핑된 타입을 사용하여 값을 동기화하기
+
+보수적(conservative) 접근법 or 실패에 닫힌(fail close) 접근법
+
+매핑된 타입은 한 객체가 다른 객체와 정확히 같은 속성을 가지게 할때 이상적임 => 값과 타입 동기화 == 새로운 타입이 추가되면 다른쪽도 추가 되어야함
+
+타입의 구성과 값을 const로 선언해 정확히 일치한지 체크함
